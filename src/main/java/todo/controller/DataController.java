@@ -35,7 +35,10 @@ public class DataController {
 
     @GetMapping("/analysis")
     public R<CountData> analysis(HttpSession session){
+
         String userID= (String) session.getAttribute("userID");   //获取当前登录用户ID
+        log.info("进入统计函数，当前用户ID:"+userID);
+
         if(userID==null){
             return R.error("用户未登录");
         }

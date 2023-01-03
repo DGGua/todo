@@ -7,7 +7,7 @@ import todo.entity.Todos;
 public interface TodosService extends IService<Todos> {
     void saveWithTodoList(TodoDto todoDto,String userID);
 
-    void deleteWithTodoList(int id);
+    void deleteWithTodoList(int id,String userID);
 
-    void updateWithTodoList(TodoDto todoDto);
+    void updateWithTodoList(TodoDto todoDto,String userID);
 }

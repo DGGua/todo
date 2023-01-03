@@ -44,6 +44,7 @@ public class TodosImpl extends ServiceImpl<TodosMapper, Todos> implements TodosS
            Todolist todolist =new Todolist();
            todolist.setProject(subs.get(i));    //设置待办名称
            todolist.setTodoID(todoDto.getId()); //设置所属待办id
+           todolist.setUserID(userID);
            todoLists.add(todolist);   //加入数组
 
        }
@@ -53,23 +54,26 @@ public class TodosImpl extends ServiceImpl<TodosMapper, Todos> implements TodosS
 
     @Override
     @Transactional
-    public void deleteWithTodoList(int id){
+    public void deleteWithTodoList(int id,String userID){
         //删除待办信息
        this.removeById(id);
        //删除待办关联的待办集
         LambdaQueryWrapper<Todolist> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Todolist::getTodoID,id);
+        queryWrapper.eq(Todolist::getUserID,userID);
         todoListService.remove(queryWrapper);
     }
 
     @Override
     @Transactional
-    public void updateWithTodoList(TodoDto todoDto){
+    public void updateWithTodoList(TodoDto todoDto,String userID){
         //更新待办信息
         this.updateById(todoDto);
         int id = todoDto.getId();
+
         LambdaQueryWrapper<Todolist> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Todolist::getTodoID,id);
+        queryWrapper.eq(Todolist::getUserID,userID);  //该用户->待办->待办集
         //先删除再更新
         todoListService.remove(queryWrapper);
 
@@ -80,6 +84,7 @@ public class TodosImpl extends ServiceImpl<TodosMapper, Todos> implements TodosS
             Todolist todolist =new Todolist();
             todolist.setProject(subs.get(i));    //设置待办名称
             todolist.setTodoID(todoDto.getId()); //设置所属待办id
+            todolist.setUserID(userID);
             todoLists.add(todolist);   //加入数组
 
         }

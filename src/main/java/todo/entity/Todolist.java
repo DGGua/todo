@@ -18,4 +18,6 @@ public class Todolist {
 
     private Integer todoID;  //所属待办集
     private String project;  //待办集名称
+    private String userID;   //所属用户ID
+
 }

@@ -30,6 +30,7 @@ public class UserController {
     /**
      * 用户登录
      * @param user
+     * @param session
      * @return
      */
     @PostMapping("/login")
@@ -48,13 +49,20 @@ public class UserController {
         }
         //登陆成功,保存userID
         session.setAttribute("userID",user.getUserID());
+        log.info("当前登录用户id:"+user.getUserID());
         System.out.println("实验，查看session保存的ID:"+(String) session.getAttribute("userID"));
         return R.success(user1);
 
     }
 
+    /**
+     * 注册用户
+     * @param user
+     * @return
+     */
     @PostMapping("/register")
     public R<String> register(@RequestBody User user){
+        log.info("注册用户:"+user.toString());
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(User::getUserID,user.getUserID());
         User user1 = userService.getOne(queryWrapper);

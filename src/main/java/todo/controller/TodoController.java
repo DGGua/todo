@@ -13,6 +13,7 @@ import todo.service.TodoListService;
 import todo.service.TodosService;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,20 +37,24 @@ public class TodoController {
     private TodoListService todoListService;
 
     /**
-     * 新建待办,可运行
+     * 新建待办
      * @param todoDto
+     * @param request
      * @return
      */
     @PutMapping("/create")
-    public R<String> create(@RequestBody TodoDto todoDto , HttpServletRequest request){
-       log.info("进入待办create方法",todoDto.toString());
+    public R<String> create(@RequestBody TodoDto todoDto , HttpSession request){
+
        String userID =(String) request.getAttribute("userID");
-       userID="111";  //测试
+        log.info("进入待办create方法:"+todoDto.toString()+"用户id:"+userID);
+//       userID="111";  //测试
+
        if(userID==null){
            return R.error("未登录");
        }
        LambdaQueryWrapper<Todos> queryWrapper = new LambdaQueryWrapper<>();
-       queryWrapper.eq(Todos::getId,todoDto.getId());
+       queryWrapper.eq(Todos::getId,todoDto.getId());   //查询该待办id
+       queryWrapper.eq(Todos::getUserID,userID);   //查询用户ID
        Todos todos = todosService.getOne(queryWrapper);
        if(todos!=null){
            return R.error("待办已存在");
@@ -59,16 +64,26 @@ public class TodoController {
     }
 
     /**
-     * 获取某天待办
+     * 获取某天待办信息
      * @param date
+     * @param request
      * @return
      */
     @GetMapping("/list")
-    public R<List<TodoDto>> list(@RequestParam String date){
+    public R<List<TodoDto>> list(@RequestParam String date, HttpSession request){
+
+        String userID =(String) request.getAttribute("userID");
+        log.info("获取某天待办函数,当前用户ID:"+userID);
+        if(userID==null){
+            return R.error("未登录");
+        }
+
      //1.构造查询器
       final LambdaQueryWrapper<Todos> queryWrapper =new LambdaQueryWrapper<>();
       //2.查询该日期待办 startTime
-        queryWrapper.like(Todos::getStarttime,date);
+        queryWrapper.eq(Todos::getUserID,userID);   //当前用户的待办
+        queryWrapper.like(Todos::getStarttime,date);   //模糊查询日期
+
         final List<Todos> todos=todosService.list(queryWrapper);
 
         if(todos.isEmpty()){
@@ -105,11 +120,24 @@ public class TodoController {
     /**
      * 获取某个待办信息
      * @param id
+     * @param request
      * @return
      */
     @GetMapping("/get")
-    public R<TodoDto> get(@RequestParam int id){
-        Todos todos = todosService.getById(id);
+    public R<TodoDto> get(@RequestParam int id,HttpSession request){
+
+        String userID =(String) request.getAttribute("userID");
+
+        log.info("获取某个待办信息，待办id:"+id+"用户ID:"+userID);
+        if(userID==null){
+            return R.error("未登录");
+        }
+        LambdaQueryWrapper<Todos> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Todos::getUserID,userID);   //当前用户待办
+        queryWrapper.eq(Todos::getId,id);   //待办id
+
+        Todos todos = todosService.getOne(queryWrapper);
+
         if(todos==null){
             return R.error("没有该待办");
         }
@@ -117,9 +145,9 @@ public class TodoController {
         //拷贝
         BeanUtils.copyProperties(todos,todoDto);
         //条件构造器
-        LambdaQueryWrapper<Todolist> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Todolist::getTodoID,id);
-        List<Todolist> todolists = todoListService.list(queryWrapper);
+        LambdaQueryWrapper<Todolist> queryWrapper1 = new LambdaQueryWrapper<>();
+        queryWrapper1.eq(Todolist::getTodoID,id);
+        List<Todolist> todolists = todoListService.list(queryWrapper1);
 
         //设置待办集
         List<String> subs = new ArrayList<>();
@@ -138,33 +166,47 @@ public class TodoController {
      * @return
      */
     @DeleteMapping("/delete")
-    public R<String> delete(@RequestParam int id,HttpServletRequest request){
-        log.info("进入待办delete方法,待办id", id);
+    public R<String> delete(@RequestParam int id,HttpSession request){
+
+        log.info("进入待办delete方法,待办id:"+ id);
         String userID =(String) request.getAttribute("userID");
-        userID="111";  //测试
+//        userID="111";  //测试
         if(userID==null){
             return R.error("未登录");
         }
         LambdaQueryWrapper<Todos> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Todos::getId,id);
+        queryWrapper.eq(Todos::getUserID,userID);  //当前用户的待办
         Todos todos = todosService.getOne(queryWrapper);
+
         if(todos==null){
-            return R.error("待办不存在");
+            return R.error("待办不存在");    //一般来说，删除的待办是存在的
         }
 
-        todosService.deleteWithTodoList(id);
+        todosService.deleteWithTodoList(id,userID);
         return R.success("删除成功");
     }
 
     /**
      * 完成某个待办
      * @param id
+     * @param request
      * @return
      */
     @PostMapping("/complete")
-    public R<String> complete(@RequestParam int id){
+    public R<String> complete(@RequestParam int id,HttpSession request){
 
-        Todos todos = todosService.getById(id);
+        String userID =(String) request.getAttribute("userID");
+        log.info("完成某个待办，待办id:"+id+"用户id:"+userID);
+        if(userID==null){
+            return R.error("未登录");
+        }
+
+        LambdaQueryWrapper<Todos> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Todos::getUserID,userID);
+        queryWrapper.eq(Todos::getId,id);
+
+        Todos todos = todosService.getOne(queryWrapper);
         if(todos==null){
             return R.error("待办不存在");
         }
@@ -176,17 +218,27 @@ public class TodoController {
     /**
      * 更新某个待办信息
      * @param todoDto
+     * @param request
      * @return
      */
     @PostMapping("/update")
-    public R<String> update(@RequestBody TodoDto todoDto){
+    public R<String> update(@RequestBody TodoDto todoDto,HttpSession request){
+
+        String userID =(String) request.getAttribute("userID");
+        log.info("更新某个待办信息，待办信息:"+todoDto.toString());
+        if(userID==null){
+            return R.error("未登录");
+        }
+
         LambdaQueryWrapper<Todos> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Todos::getId,todoDto.getId());
+        queryWrapper.eq(Todos::getUserID,userID);
+
         Todos todos = todosService.getOne(queryWrapper);
         if(todos==null){
             return R.error("待办不存在");   //一般来说更改代办时待办都存在
         }
-        todosService.updateWithTodoList(todoDto);
+        todosService.updateWithTodoList(todoDto,userID);
         return R.success("更改信息成功！");
     }
 
