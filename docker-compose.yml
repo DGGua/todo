@@ -1,0 +1,20 @@
+version: "3"
+services:
+  mysql:
+    container_name: mysql
+    build: ./sql
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d/
+      - ./sql:/etc/mysql/mysql.conf.d/
+      - ~/.mysql:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+    ports:
+      - "3306:3306"
+    restart: always
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+  backend:
+    build: "."
+    ports:
+      - "8080:8080"
+    restart: always
