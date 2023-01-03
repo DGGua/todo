@@ -1,0 +1,28 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: todo
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/todo?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
+  servlet:
+    multipart:
+      max-file-size: 2MB
+
+
+
+#mybatis-plus相关配置
+mybatis-plus:
+  configuration:
+    # 下划线分隔型的字段，自动与相应小驼峰命名的属性映射
+    map-underscore-to-camel-case: false
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db_config:
+      id-type: ASSIGN_ID
+      logic-delete-field: idDeleted
+      logic-delete-value: 1   #被删除标志位为1
+      logic-not-delete-value: 0
