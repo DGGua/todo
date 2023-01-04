@@ -45,10 +45,5 @@ public class R<T> implements Serializable {
         return r;
     }
 
-    //添加动态数据
-    public R<T> add(String key,Object value ){
-        this.map.put(key,value);
-        return this;
-    }
 }
 

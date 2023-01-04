@@ -18,3 +18,7 @@ services:
     ports:
       - "8080:8080"
     restart: always
+    deploy:
+      resources:
+        limits:
+           memory: 500M

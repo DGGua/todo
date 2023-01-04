@@ -12,9 +12,8 @@ import todo.entity.Todos;
 import todo.service.TodoListService;
 import todo.service.TodosService;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.time.LocalDateTime;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -70,7 +69,7 @@ public class TodoController {
      * @return
      */
     @GetMapping("/list")
-    public R<List<TodoDto>> list(@RequestParam String date, HttpSession request){
+    public R<List<TodoDto>> list(@RequestParam String date, HttpSession request) throws ParseException {
 
         String userID =(String) request.getAttribute("userID");
         log.info("获取某天待办函数,当前用户ID:"+userID);
@@ -78,17 +77,59 @@ public class TodoController {
             return R.error("未登录");
         }
 
+        //转换日期
+        StringBuilder temp=new StringBuilder(date);
+        temp.insert(8," 00:00:00");
+        temp.insert(6,"-");
+        temp.insert(4,"-");
+
+        String date1=temp.toString();
+        log.info("时间字符串:"+date1);
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//SimpleDateFormat格式和解析日期的类
+//        Date parse = sdf.parse(date1);//得到java.util.Date对象
+//        long time = parse.getTime();//返回当前日期对应的long类型的毫秒数
+//        java.sql.Date date2 = new java.sql.Date(time);//得到java.sql.Date类型的对象，就可以插入到数据表对应的Date字段
+//        log.info("转换的日期:"+date2);
+
+
      //1.构造查询器
-      final LambdaQueryWrapper<Todos> queryWrapper =new LambdaQueryWrapper<>();
-      //2.查询该日期待办 startTime
+        final LambdaQueryWrapper<Todos> queryWrapper =new LambdaQueryWrapper<>();
+        LambdaQueryWrapper<Todos> queryWrapper1 = new LambdaQueryWrapper<>();
+        LambdaQueryWrapper<Todos> queryWrapper2 = new LambdaQueryWrapper<>();
+      //2.查询,构造查询器（句段有点重复）
         queryWrapper.eq(Todos::getUserID,userID);   //当前用户的待办
-        queryWrapper.like(Todos::getStarttime,date);   //模糊查询日期
+        queryWrapper.eq(Todos::getStatus,0);   //所有未完成待办
+        queryWrapper1.eq(Todos::getUserID,userID);   //当前用户的待办
+        queryWrapper1.eq(Todos::getStatus,0);   //所有未完成待办
+        queryWrapper2.eq(Todos::getUserID,userID);   //当前用户的待办
+        queryWrapper2.eq(Todos::getStatus,0);   //所有未完成待办
 
-        final List<Todos> todos=todosService.list(queryWrapper);
+        //noclock没有时间，backclock只有endtime, normalclock有start和end
+        //(1)全部noclock的未完成待办
+        log.info("开始查询noclock");
+         queryWrapper.eq(Todos::getTimecategory,"noclock");
+         List<Todos> todos_noclock = todosService.list(queryWrapper);
+         List<Todos> todos = new ArrayList<>(todos_noclock);
 
-        if(todos.isEmpty()){
+        log.info("开始查询backlock");
+        //(2)截止日期在这一天之后的截止日期未完成待办
+        queryWrapper1.eq(Todos::getTimecategory,"backclock");
+        queryWrapper1.ge(Todos::getEndtime,date1);
+        List<Todos> todos_backclock = todosService.list(queryWrapper1);
+        todos.addAll(todos_backclock);
+
+        //(3)当前查看日期在开始日期和截止日期之间的所有未完成待办
+        log.info("开始查询normalclock");
+        queryWrapper2.eq(Todos::getTimecategory,"normalclock");   //正常待办
+        queryWrapper2.lt(Todos::getStarttime,date1);   //小于当前日期
+        queryWrapper2.gt(Todos::getEndtime,date1);   //大于当前日期
+        List<Todos> todos_normalclock = todosService.list(queryWrapper2);
+        todos.addAll(todos_normalclock);
+
+         if(todos.isEmpty()){
             return R.error("没有找到记录");
         }
+
         // 3.查到多条记录，遍历id,找todoList
         final List<TodoDto> todoDtos=todos.stream().map(item->{
             TodoDto todoDto=new TodoDto();
@@ -97,10 +138,10 @@ public class TodoController {
             final Integer id = item.getId();  //获取每个对象的主键id
             //根据id查询待办集
             //构造查询器
-            final LambdaQueryWrapper<Todolist> queryWrapper1 = new LambdaQueryWrapper<>();
-            queryWrapper1.eq(Todolist::getTodoID,id);
+            final LambdaQueryWrapper<Todolist> queryWrapper3 = new LambdaQueryWrapper<>();
+            queryWrapper3.eq(Todolist::getTodoID,id);
             //获取待办集
-            final List<Todolist> todolist = todoListService.list(queryWrapper1);
+            final List<Todolist> todolist = todoListService.list(queryWrapper3);
             //赋值
             List<String> subs = new ArrayList<>();
             for (Todolist value : todolist) {
