@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * @ClassName:todos
@@ -19,10 +20,10 @@ public class Todos {
     private String timecategory;  //计时类型:倒计时，正向计时，不计时
 
     @JsonFormat(shape=JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime endtime;  //截止日期
+    private Date endtime;  //截止日期
 
     @JsonFormat(shape=JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime starttime;  //开始日期
+    private Date starttime;  //开始日期
 
     private String userID;           //所属用户ID
     private Integer id;           //待办id
