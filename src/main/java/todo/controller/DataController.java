@@ -28,7 +28,8 @@ import java.util.List;
  */
 @RequestMapping("/data")
 @RestController
-@CrossOrigin(origins = { "http://todo.dggua.top" }, allowCredentials = "true")
+@CrossOrigin(origins = { "http://192.168.1.101:3000", "http://todo.dggua.top",
+        "39.106.92.255" }, allowCredentials = "true")
 @Slf4j
 public class DataController {
 

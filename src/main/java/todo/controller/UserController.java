@@ -19,11 +19,12 @@ import javax.servlet.http.HttpSession;
  * @Description:用户控制器类
  * @Author:liumengying
  * @Date: 2023/1/1 15:24
- * Version v1.0
+ *        Version v1.0
  */
 @RestController
 @Slf4j
-@CrossOrigin(origins = {"http://todo.dggua.top"}, allowCredentials = "true")
+@CrossOrigin(origins = { "http://192.168.1.101:3000", "http://todo.dggua.top",
+        "39.106.92.255" }, allowCredentials = "true")
 @RequestMapping("/user")
 public class UserController {
     @Autowired
@@ -31,44 +32,46 @@ public class UserController {
 
     /**
      * 用户登录
+     * 
      * @param user
      * @param session
      * @return
      */
     @PostMapping("/login")
-    public R<User> login(@RequestBody User user,HttpSession session ){
-       //查询数据库
-        final LambdaQueryWrapper<User> queryWrapper=new LambdaQueryWrapper<>();
-        queryWrapper.eq(User::getUserID,user.getUserID());
-        final User user1=  userService.getOne(queryWrapper);
-        //没有根据账号找到数据
-        if(user1 == null){
+    public R<User> login(@RequestBody User user, HttpSession session) {
+        // 查询数据库
+        final LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(User::getUserID, user.getUserID());
+        final User user1 = userService.getOne(queryWrapper);
+        // 没有根据账号找到数据
+        if (user1 == null) {
             return R.error("账号不存在");
         }
-        //密码比对
-        if(!user1.getPassword().equals(user.getPassword())){
+        // 密码比对
+        if (!user1.getPassword().equals(user.getPassword())) {
             return R.error("密码错误");
         }
-        //登陆成功,保存userID
-        session.setAttribute("userID",user.getUserID());
-        log.info("当前登录用户id:"+user.getUserID());
-        System.out.println("实验，查看session保存的ID:"+(String) session.getAttribute("userID"));
+        // 登陆成功,保存userID
+        session.setAttribute("userID", user.getUserID());
+        log.info("当前登录用户id:" + user.getUserID());
+        System.out.println("实验，查看session保存的ID:" + (String) session.getAttribute("userID"));
         return R.success(user1);
 
     }
 
     /**
      * 注册用户
+     * 
      * @param user
      * @return
      */
     @PostMapping("/register")
-    public R<String> register(@RequestBody User user){
-        log.info("注册用户:"+user.toString());
+    public R<String> register(@RequestBody User user) {
+        log.info("注册用户:" + user.toString());
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(User::getUserID,user.getUserID());
+        queryWrapper.eq(User::getUserID, user.getUserID());
         User user1 = userService.getOne(queryWrapper);
-        if(user1!=null){
+        if (user1 != null) {
             return R.error("账号已存在");
         }
         userService.save(user);
