@@ -11,12 +11,9 @@ import todo.common.R;
 import todo.entity.CommonCount;
 import todo.entity.CountData;
 import todo.entity.Todos;
-import todo.service.TodoListService;
 import todo.service.TodosService;
 
 import javax.servlet.http.HttpSession;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -51,6 +48,7 @@ public class DataController {
         // 构造器
         LambdaQueryWrapper<Todos> queryWrapper1 = new LambdaQueryWrapper<>();
         queryWrapper1.eq(Todos::getUserID, userID);
+        queryWrapper1.eq(Todos::getTimecategory, "normalclock");
         List<Todos> todos1 = todosService.list(queryWrapper1);
 
         // 如果所有待办为空，即刻返回
@@ -76,6 +74,7 @@ public class DataController {
         LambdaQueryWrapper<Todos> queryWrapper2 = new LambdaQueryWrapper<>();
         queryWrapper2.eq(Todos::getUserID, userID);
         queryWrapper2.eq(Todos::getStatus, 1);
+        queryWrapper2.eq(Todos::getTimecategory, "normalclock");
         List<Todos> todos2 = todosService.list(queryWrapper2);
         complete.setCount(todos2.size()); // 完成待办数
         int countTime2 = 0;
