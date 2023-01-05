@@ -267,13 +267,14 @@ public class TodoController {
 
         String userID =(String) request.getAttribute("userID");
         log.info("更新某个待办信息，待办信息:"+todoDto.toString());
+
         if(userID==null){
             return R.error("未登录");
         }
 
         LambdaQueryWrapper<Todos> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Todos::getId,todoDto.getId());
-        queryWrapper.eq(Todos::getUserID,userID);
+        queryWrapper.eq(Todos::getId,todoDto.getId());  //待办id
+        queryWrapper.eq(Todos::getUserID,userID);   //用户ID
 
         Todos todos = todosService.getOne(queryWrapper);
         if(todos==null){
