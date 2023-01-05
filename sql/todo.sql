@@ -31,7 +31,7 @@ CREATE TABLE `todolist` (
   `userID` char(255) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `todolist_todos_id_fk` (`todoID`)
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=latin1 COMMENT='待办集';
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8 COMMENT='待办集';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -65,7 +65,7 @@ CREATE TABLE `todos` (
   KEY `ix_todos_user_id` (`userID`),
   KEY `ix_todos_todoType` (`category`),
   KEY `ix_todos_todoName` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -92,7 +92,7 @@ CREATE TABLE `user` (
   `userID` char(255) NOT NULL COMMENT '用户账号',
   `phone` char(11) NOT NULL,
   PRIMARY KEY (`userID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
