@@ -1,9 +1,12 @@
 package todo.common;
 
 import lombok.Data;
+import todo.dto.TodoDto;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,7 +23,7 @@ public class R<T> implements Serializable {
     private Integer code;  //返回码：1为成功
     private String msg;  //错误信息
     private T data; //返回的数据
-    private Map map =new HashMap(); //动态数据，用于存储未知类型或者经常变化的数据，一键值对形式
+
 
     public static <T> R<T> success(T object){
         R<T> r=new R<T>();
@@ -45,10 +48,5 @@ public class R<T> implements Serializable {
         return r;
     }
 
-    //添加动态数据
-    public R<T> add(String key,Object value ){
-        this.map.put(key,value);
-        return this;
-    }
 }
 
