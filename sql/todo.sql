@@ -72,7 +72,7 @@ CREATE TABLE `todos` (
 
 LOCK TABLES `todos` WRITE;
 /*!40000 ALTER TABLE `todos` DISABLE KEYS */;
-INSERT INTO `todos` VALUES ('edqh','group','normalclock','2001-11-24 01:32:43','2008-03-08 13:37:32',NULL,'222',22,0),('2333','group','noclock','0000-00-00 00:00:00','0000-00-00 00:00:00',NULL,'222',24,0),('test','single','noclock','0000-00-00 00:00:00','0000-00-00 00:00:00',NULL,'222',25,0),('anomqeeyn','group','normalclock','1999-04-09 12:47:27','1996-02-07 12:54:16',NULL,'111',59,1),('cncttytq','single','backclock','2015-02-11 08:15:23','0000-00-00 00:00:00',NULL,'222',63,0);
+INSERT INTO `todos` VALUES ('edqh','group','normalclock','2001-11-24 01:32:43','2008-03-08 13:37:32',NULL,'222',22,0),('待办','group','noclock','0000-00-00 00:00:00','0000-00-00 00:00:00',NULL,'222',24,0),('test','single','noclock','0000-00-00 00:00:00','0000-00-00 00:00:00',NULL,'222',25,0),('anomqeeyn','group','normalclock','1999-04-09 12:47:27','1996-02-07 12:54:16',NULL,'111',59,1),('cncttytq','single','backclock','2015-02-11 08:15:23','0000-00-00 00:00:00',NULL,'222',63,0);
 /*!40000 ALTER TABLE `todos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -86,7 +86,6 @@ DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `password` char(255) NOT NULL COMMENT '用户密码',
   `name` char(255) DEFAULT NULL COMMENT '用户名',
-  `description` char(255) DEFAULT NULL COMMENT '用户账号描述',
   `userID` char(255) NOT NULL COMMENT '用户账号',
   `phone` char(11) NOT NULL,
   PRIMARY KEY (`userID`)
@@ -99,7 +98,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES ('111','111','111','111','12345678900'),('220','220','333','220','18665368833'),('222','222','222','222','18226756788'),('RIgFI','333','333','333','18666254088'),('2^@^*n','xiaoxiao','test','360000199103316466','18177837777');
+INSERT INTO `user` VALUES ('111','111','111','12345678900'),('220','220','220','18665368833'),('222','222','222','18226756788'),('RIgFI','333','333','18666254088'),('2^@^*n','xiaoxiao','360000199103316466','18177837777');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -112,4 +111,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-01-04 21:15:10
+-- Dump completed on 2023-01-06 21:31:18
