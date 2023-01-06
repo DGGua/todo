@@ -18,7 +18,9 @@
 --
 -- Table structure for table `todolist`
 --
-
+DROP DATABASE IF EXISTS `todo`;
+CREATE DATABASE `todo`;
+use `todo`;
 DROP TABLE IF EXISTS `todolist`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
