@@ -2,9 +2,12 @@
 # BUILD STAGE
 #
 FROM registry.cn-hangzhou.aliyuncs.com/acs/maven AS build  
-COPY src /usr/src/app/src  
+WORKDIR /usr/src/app  
 COPY pom.xml /usr/src/app  
+RUN ["/usr/local/bin/mvn-entrypoint.sh","mvn","-T 2C","verify","clean","--fail-never"]
+COPY src /usr/src/app/src  
 RUN mvn -f /usr/src/app/pom.xml clean package
+
 
 #
 # PACKAGE STAGE
