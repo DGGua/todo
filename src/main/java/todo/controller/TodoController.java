@@ -41,8 +41,7 @@ import todo.utils.DateDiff;
  */
 @RestController
 @Slf4j
-@CrossOrigin(origins = { "http://192.168.1.101:3000", "http://todo.dggua.top",
-        "39.106.92.255" }, allowCredentials = "true")
+@CrossOrigin(origins = { "http://todo.dggua.top" }, allowCredentials = "true")
 @RequestMapping("/todo")
 public class TodoController {
     @Autowired
