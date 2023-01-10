@@ -50,14 +50,9 @@ public class DataController {
         queryWrapper1.eq(Todos::getUserID,userID);
         List<Todos> todos1 = todosService.list(queryWrapper1);
 
-        //如果所有待办为空，即刻返回
-        if(todos1.isEmpty()){
-            return R.error("没有待办");
-        }
-
-        CommonCount total = new CommonCount();  //所有待办统计
-        CommonCount complete = new CommonCount();  //完成待办统计
-        CommonCount last = new CommonCount();   //余下待办
+        CommonCount total = new CommonCount(); // 所有待办统计
+        CommonCount complete = new CommonCount(); // 完成待办统计
+        CommonCount last = new CommonCount(); // 余下待办
 
         int all_count = todos1.size();
         total.setCount(all_count);
